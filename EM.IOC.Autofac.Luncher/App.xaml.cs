@@ -26,10 +26,8 @@ namespace EM.IOC.Autofac.Luncher
             {
                 ServiceDirectories=serviceDirectories
             };
-            var assemblyPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "EM.IOC.Autofac.dll");
-            Assembly assembly = Assembly.LoadFile(assemblyPath);
-            IIocManager iocManager = BaseIocManager.GetIocManager(assembly, iocOptions);
-            IAppManager appManager = iocManager.GetService<IAppManager>();
+            var iocManager = new IocManager(iocOptions);
+            var appManager = iocManager.GetService<IAppManager>();
             //此处可设置优先启动登录窗体
             MainWindow window = new MainWindow(appManager);//在主窗体中加载插件
             if (!(window.ShowDialog() ?? false))
