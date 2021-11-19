@@ -11,8 +11,8 @@
 
         <Grid x:Name="bottom" DockPanel.Dock="Bottom" Height="24" Background="Yellow">
             <WrapPanel VerticalAlignment="Center">
-                <Button Content="注册" Margin="10,0,0,0" Click="Button_Click"/>
-                <Button Content="移除注册" Margin="10,0" Click="Button_Click_1"/>
+                <Button Content="加载插件" Margin="10,0,0,0" Click="Button_Click"/>
+                <Button Content="卸载插件" Margin="10,0" Click="Button_Click_1"/>
             </WrapPanel>
         </Grid>
         <Grid x:Name="content" Background="Blue"/>

@@ -58,7 +58,7 @@ namespace EM.IOC
         /// <param name="assembly">程序集</param>
         /// <param name="args">参数</param>
         /// <returns>Ioc管理器集合</returns>
-        public static List<IIocManager> GetIocManagers(Assembly assembly, object[] args)
+        public static List<IIocManager> GetIocManagers(Assembly assembly, params object[] args)
         {
             List<IIocManager> iocManagers = new List<IIocManager>();
             if (assembly!=null)
@@ -73,7 +73,7 @@ namespace EM.IOC
                         {
                             try
                             {
-                                IIocManager iocManager = (IIocManager)assembly.CreateInstance(item.FullName, false, BindingFlags.Default, null, args, null, null);
+                                IIocManager iocManager = (IIocManager)Activator.CreateInstance(item, args);
                                 iocManagers.Add(iocManager);
                             }
                             catch (Exception e)
@@ -92,7 +92,7 @@ namespace EM.IOC
         /// <param name="assembly">程序集</param>
         /// <param name="args">参数</param>
         /// <returns>Ioc管理器</returns>
-        public static IIocManager GetIocManager(Assembly assembly, object[] args)
+        public static IIocManager GetIocManager(Assembly assembly, params object[] args)
         {
             IIocManager iocManager = null;
             if (assembly!=null)
@@ -107,7 +107,7 @@ namespace EM.IOC
                         {
                             try
                             {
-                                iocManager = (IIocManager)assembly.CreateInstance(item.FullName, false, BindingFlags.Default, null, args, null, null);
+                                iocManager = (IIocManager)Activator.CreateInstance(item, args);
                             }
                             catch (Exception e)
                             {
@@ -129,35 +129,9 @@ namespace EM.IOC
         /// <param name="assembly">程序集</param>
         /// <param name="options">Ioc参数</param>
         /// <returns>Ioc管理器</returns>
-        public static IIocManager GetIocManager(Assembly assembly, IocOptions options)
+        public static IIocManager GetIocManagerByOptions(Assembly assembly, IocOptions options)
         {
-            IIocManager iocManager = null;
-            if (assembly!=null)
-            {
-                var types = assembly.GetTypes();
-                if (types.Length>0)
-                {
-                    var destType = typeof(IIocManager);
-                    foreach (var item in types)
-                    {
-                        if (!item.IsAbstract && destType.IsAssignableFrom(item))
-                        {
-                            try
-                            {
-                                iocManager = (IIocManager)assembly.CreateInstance(item.FullName, false, BindingFlags.Default, null, new object[] { options }, null, null);
-                            }
-                            catch (Exception e)
-                            {
-                                Debug.WriteLine($"创建类型{item}失败：{e}");
-                            }
-                            if (iocManager!=null)
-                            {
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
+            IIocManager iocManager = GetIocManager(assembly,options);
             return iocManager;
         }
     }
