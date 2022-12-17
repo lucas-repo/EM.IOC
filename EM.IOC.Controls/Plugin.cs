@@ -9,7 +9,7 @@ namespace EM.IOC.Controls
     /// <summary>
     /// 插件
     /// </summary>
-    public class Plugin : BasePlugin
+    public class Plugin : IOC.Plugin
     {
         protected readonly IAppManager AppManager;
         public Plugin(IAppManager appManager) : base(appManager?.IocManager)

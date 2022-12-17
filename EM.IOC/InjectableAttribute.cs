@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace EM.IOC
 {
@@ -15,6 +18,6 @@ namespace EM.IOC
         /// <summary>
         /// 服务类型
         /// </summary>
-        public Type ServiceType { get; set; }
+        public Type ServiceType { get; set; } 
     }
 }

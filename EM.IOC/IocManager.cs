@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace EM.IOC
 {
     /// <summary>
     /// 控制反转管理器
     /// </summary>
-    public abstract class BaseIocManager : IIocManager
+    public abstract class IocManager : IIocManager
     {
         /// <summary>
         /// ioc参数
@@ -19,38 +20,72 @@ namespace EM.IOC
         /// 实例化管理器（自动创建Host主机）
         /// </summary>
         /// <param name="iocOptions">ioc参数</param>
-        public BaseIocManager(IocOptions iocOptions)
+        public IocManager(IocOptions iocOptions)
         {
-            IocOptions=iocOptions;
+            IocOptions = iocOptions;
         }
 
+        /// <inheritdoc/>
         public abstract T GetService<T>();
+        /// <inheritdoc/>
         public abstract IEnumerable<T> GetServices<T>();
 
-        public virtual int LoadPlugins()
+        /// <inheritdoc/>
+        public virtual async Task<List<IPlugin>> LoadPlugins()
         {
-            int count = 0;
-            foreach (var item in GetServices<IInjectable>().Cast<IPlugin>().OrderBy(x => x.Priority))
+            var ret = new List<IPlugin>();
+            await Task.Factory.StartNew(() =>
             {
-                if (item.Load())
+                var plugins = GetServices<IPlugin>();
+                var plugins1 = plugins.Where(x => !x.IsUnloadable).OrderBy(x => x.Priority);//不允许卸载的扩展
+                var unloadablePlugins = plugins.Where(x => x.IsUnloadable).OrderBy(x => x.Priority);//允许卸载的扩展
+
+                foreach (var item in plugins1.Union(unloadablePlugins))
                 {
-                    count++;
+                    if (Load(item))
+                    {
+                        ret.Add(item);
+                    }
+                }
+            });
+            return ret;
+        }
+        private static bool Load(IPlugin plugin)
+        {
+            bool ret = false;
+            if (plugin == null)
+            {
+                return ret;
+            }
+            if (!plugin.IsLoaded)
+            {
+                try
+                {
+                    Debug.WriteLine($"加载 {plugin.AssemblyQualifiedName} 中");
+                    plugin.Load();
+                    ret = true;
+                    Debug.WriteLine($"加载 {plugin.AssemblyQualifiedName} 完成");
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine($"加载 {plugin.AssemblyQualifiedName} 失败，{e}");
                 }
             }
-            return count;
+            return ret;
         }
 
-        public virtual int UnloadPlugins()
+        /// <inheritdoc/>
+        public virtual List<IPlugin> UnloadPlugins()
         {
-            int count = 0;
-            foreach (var item in GetServices<IInjectable>().Cast<IPlugin>())
+            var ret = new List<IPlugin>();
+            foreach (var item in GetServices<IPlugin>())
             {
-                if (item.Unload())
+                if (item?.Unload() == true)
                 {
-                    count++;
+                    ret.Add(item);
                 }
             }
-            return count;
+            return ret;
         }
         /// <summary>
         /// 获取程序集中的Ioc管理器集合
@@ -61,10 +96,10 @@ namespace EM.IOC
         public static List<IIocManager> GetIocManagers(Assembly assembly, params object[] args)
         {
             List<IIocManager> iocManagers = new List<IIocManager>();
-            if (assembly!=null)
+            if (assembly != null)
             {
                 var types = assembly.GetTypes();
-                if (types.Length>0)
+                if (types.Length > 0)
                 {
                     var destType = typeof(IIocManager);
                     foreach (var item in types)
@@ -95,10 +130,10 @@ namespace EM.IOC
         public static IIocManager GetIocManager(Assembly assembly, params object[] args)
         {
             IIocManager iocManager = null;
-            if (assembly!=null)
+            if (assembly != null)
             {
                 var types = assembly.GetTypes();
-                if (types.Length>0)
+                if (types.Length > 0)
                 {
                     var destType = typeof(IIocManager);
                     foreach (var item in types)
@@ -113,7 +148,7 @@ namespace EM.IOC
                             {
                                 Debug.WriteLine($"创建类型{item}失败：{e}");
                             }
-                            if (iocManager!=null)
+                            if (iocManager != null)
                             {
                                 break;
                             }
@@ -131,7 +166,7 @@ namespace EM.IOC
         /// <returns>Ioc管理器</returns>
         public static IIocManager GetIocManagerByOptions(Assembly assembly, IocOptions options)
         {
-            IIocManager iocManager = GetIocManager(assembly,options);
+            IIocManager iocManager = GetIocManager(assembly, options);
             return iocManager;
         }
     }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EM.IOC.Plugins.Contents
 {
-    public class ContentPlugin : Plugin
+    public class ContentPlugin : Controls.Plugin
     {
         UserControl1 _userControl;
 

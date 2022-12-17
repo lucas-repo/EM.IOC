@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace EM.IOC
 {
@@ -22,12 +23,12 @@ namespace EM.IOC
         /// <summary>
         /// 加载插件
         /// </summary>
-        /// <returns>返回成功个数</returns>
-        int LoadPlugins();
+        /// <returns>返回成功的扩展</returns>
+        Task<List<IPlugin>> LoadPlugins();
         /// <summary>
         /// 卸载插件
         /// </summary>
-        /// <returns>返回成功个数</returns>
-        int UnloadPlugins();
+        /// <returns>返回成功的扩展</returns>
+        List<IPlugin> UnloadPlugins();
     }
 }

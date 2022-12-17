@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 namespace EM.IOC.DependencyInjection
@@ -7,7 +8,7 @@ namespace EM.IOC.DependencyInjection
     /// <summary>
     /// 控制反转管理器
     /// </summary>
-    public class IocManager : BaseIocManager, IDisposable
+    public class MsIocManager :IocManager, IDisposable
     {
         private bool disposedValue;
 
@@ -19,15 +20,29 @@ namespace EM.IOC.DependencyInjection
         /// 实例化管理器（自动创建Host主机）
         /// </summary>
         /// <param name="iocOptions">ioc参数</param>
-        public IocManager(IocOptions iocOptions) : base(iocOptions)
+        public MsIocManager(IocOptions iocOptions) : base(iocOptions)
         {
             var hostBuilder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder();
-            hostBuilder.ConfigureServices((services) => Register(services, iocOptions));//注册继承了IInjectable的类型
+            hostBuilder.ConfigureServices((services) => AddServices(services, iocOptions));//注册继承了IInjectable的类型
+            Host = hostBuilder.Build(); 
+            Host.RunAsync();
+        }
+        /// <summary>
+        /// 实例化管理器（自动创建Host主机）
+        /// </summary>
+        /// <param name="hostBuilder">宿主构造器</param>
+        /// <param name="iocOptions">容器初始化参数</param>
+        public MsIocManager(IHostBuilder hostBuilder, IocOptions iocOptions) : base(iocOptions)
+        {
+            if (hostBuilder == null)
+            {
+                throw new ArgumentNullException(nameof(hostBuilder));
+            }
+            hostBuilder.ConfigureServices((services) => AddServices(services, iocOptions));//注册继承了IInjectable的类型
             Host = hostBuilder.Build();
             Host.RunAsync();
         }
-
-        private void Register(IServiceCollection services, IocOptions iocOptions)
+        private void AddServices(IServiceCollection services, IocOptions iocOptions)
         {
             RegisterIocManager(services);//默认注册一个管理器
             if (iocOptions.ServiceDirectories!=null)
@@ -36,16 +51,17 @@ namespace EM.IOC.DependencyInjection
                 {
                     if (directory!=null)
                     {
-                        services.Register<IInjectable>(directory);
+                        services.TryAddEnumerable(directory);
                     }
                 }
             }
-            if (iocOptions.ServiceAndImplementations!=null)
+            foreach (var item in iocOptions.SingleServices)
             {
-                foreach (var item in iocOptions.ServiceAndImplementations)
-                {
-                    services.Register(item.Item1, item.Item2);
-                }
+                services.TryAdd(item.ServiceType, item.ImplementationType, item.ServiceLifetime);
+            }
+            foreach (var item in iocOptions.IenumerableServices)
+            {
+                services.TryAddEnumerable(item.ServiceType, item.ImplementationType, item.ServiceLifetime);
             }
         }
 

@@ -6,7 +6,7 @@ namespace EM.IOC.Autofac
     /// <summary>
     /// 控制反转管理器
     /// </summary>
-    public class IocManager : BaseIocManager, IDisposable
+    public class IocManager : IOC.IocManager, IDisposable
     {
         private bool disposedValue;
 
@@ -52,7 +52,7 @@ namespace EM.IOC.Autofac
 
         public override IEnumerable<T> GetServices<T>()
         {
-            //if (LifetimeScope==null)
+            //if (LifetimeScope == null)
             //{
             //    return null;
             //}

@@ -11,7 +11,7 @@ namespace EM.IOC.Controls
     /// app管理器
     /// </summary>
     [Injectable(ServiceLifetime = ServiceLifetime.Singleton, ServiceType = typeof(IAppManager))]
-    public class AppManager : BaseInjectable, IAppManager
+    public class AppManager :  IAppManager
     {
         /// <summary>
         /// 顶部控件

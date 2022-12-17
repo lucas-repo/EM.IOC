@@ -2,7 +2,7 @@
 
 namespace EM.IOC.Plugins.Headers
 {
-    public class HeaderPlugin : Plugin
+    public class HeaderPlugin : Controls.Plugin
     {
         UserControl1 _userControl;
 

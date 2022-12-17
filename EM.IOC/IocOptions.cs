@@ -5,17 +5,21 @@ using System.Text;
 namespace EM.IOC
 {
     /// <summary>
-    /// Ioc参数
+    /// 容器参数
     /// </summary>
-    public struct IocOptions
+    public class IocOptions
     {
         /// <summary>
-        /// 服务目录集合
+        /// 要注册的服务所在目录集合
         /// </summary>
-        public string[] ServiceDirectories { get; set; }
+        public List<string> ServiceDirectories { get; } = new List<string>();
         /// <summary>
-        /// 待添加的服务集合
+        /// 待添加的单个服务集合
         /// </summary>
-        public List<(Type, Type)> ServiceAndImplementations { get; set; }
+        public List<(Type ServiceType, Type ImplementationType, ServiceLifetime ServiceLifetime)> SingleServices { get; } = new List<(Type ServiceType, Type ImplementationType, ServiceLifetime ServiceLifetime)>();
+        /// <summary>
+        /// 待添加的可枚举的服务集合
+        /// </summary>
+        public List<(Type ServiceType, Type ImplementationType, ServiceLifetime ServiceLifetime)> IenumerableServices { get; } = new List<(Type ServiceType, Type ImplementationType, ServiceLifetime ServiceLifetime)>();
     }
 }

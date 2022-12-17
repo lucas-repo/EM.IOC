@@ -5,7 +5,7 @@ namespace EM.IOC.Controls
     /// <summary>
     /// app管理器接口
     /// </summary>
-    public interface IAppManager : IInjectable
+    public interface IAppManager 
     {
         /// <summary>
         /// Ioc管理器
