@@ -6,7 +6,7 @@ namespace EM.IOC.Autofac
     /// <summary>
     /// 控制反转管理器
     /// </summary>
-    public class IocManager : IOC.IocManager, IDisposable
+    public class AutofacManager : IocManager, IDisposable
     {
         private bool disposedValue;
 
@@ -14,18 +14,15 @@ namespace EM.IOC.Autofac
         /// 容器
         /// </summary>
         public IContainer Container { get; private set; }
-        //public ILifetimeScope LifetimeScope { get; private set; }
         /// <summary>
-        /// 实例化管理器（自动创建Host主机）
+        /// 实例化管理器
         /// </summary>
         /// <param name="iocOptions">ioc参数</param>
-        public IocManager(IocOptions iocOptions) : base(iocOptions)
+        public AutofacManager(IocOptions iocOptions) : base(iocOptions)
         {
             var builder = new ContainerBuilder();
             Register(builder, iocOptions);
-
-            Container = builder.Build();
-            //LifetimeScope = Container.BeginLifetimeScope();
+            Container = builder.Build(); 
         }
 
         private void Register(ContainerBuilder builder, IocOptions iocOptions)
@@ -37,29 +34,21 @@ namespace EM.IOC.Autofac
                 {
                     if (directory!=null)
                     {
-                        builder.Register<IInjectable>(directory);
+                        builder.RegisterTypes(directory);
                     }
                 }
             }
-            if (iocOptions.ServiceAndImplementations!=null)
+            if (iocOptions.NewServices != null)
             {
-                foreach (var item in iocOptions.ServiceAndImplementations)
+                foreach (var item in iocOptions.NewServices)
                 {
-                    builder.Register(item.Item1, item.Item2);
+                    builder.RegisterType(item.ServiceType, item.ImplementationType, item.ServiceLifetime);
                 }
             }
         }
 
         public override IEnumerable<T> GetServices<T>()
         {
-            //if (LifetimeScope == null)
-            //{
-            //    return null;
-            //}
-            //else
-            //{
-            //    return LifetimeScope.Resolve<IEnumerable<T>>();
-            //}
             if (Container==null)
             {
                 return null;
@@ -72,22 +61,19 @@ namespace EM.IOC.Autofac
 
         public override T GetService<T>()
         {
-            //if (LifetimeScope==null)
-            //{
-            //    throw new NullReferenceException(nameof(LifetimeScope));
-            //}
-            //else
-            //{
-            //    return LifetimeScope.Resolve<T>();
-            //}
+            T ret = default;
             if (Container==null)
             {
                 throw new NullReferenceException(nameof(Container));
             }
             else
             {
-                return Container.Resolve<T>();
+                if (Container.IsRegistered<T>())
+                {
+                    ret= Container.Resolve<T>();
+                }
             }
+            return ret;
         }
 
         protected virtual void Dispose(bool disposing)
@@ -99,11 +85,6 @@ namespace EM.IOC.Autofac
                     // TODO: 释放托管状态(托管对象)
                     if (Container!=null)
                     {
-                        //if (LifetimeScope!=null)
-                        //{
-                        //    LifetimeScope.Dispose();
-                        //    LifetimeScope=null;
-                        //}
                         Container.Dispose();
                         Container=null;
                     }

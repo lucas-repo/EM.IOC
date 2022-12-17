@@ -41,7 +41,7 @@ namespace EM.IOC
             {
                 try
                 {
-                    Assembly assembly = Assembly.LoadFile(file);
+                    Assembly assembly = Assembly.LoadFrom(file);
                     if (assembly != null)
                     {
                         services.TryAddEnumerable(assembly);

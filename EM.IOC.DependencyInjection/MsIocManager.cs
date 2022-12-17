@@ -55,11 +55,7 @@ namespace EM.IOC.DependencyInjection
                     }
                 }
             }
-            foreach (var item in iocOptions.SingleServices)
-            {
-                services.TryAdd(item.ServiceType, item.ImplementationType, item.ServiceLifetime);
-            }
-            foreach (var item in iocOptions.IenumerableServices)
+            foreach (var item in iocOptions.NewServices)
             {
                 services.TryAddEnumerable(item.ServiceType, item.ImplementationType, item.ServiceLifetime);
             }
