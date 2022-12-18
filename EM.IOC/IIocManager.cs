@@ -11,13 +11,20 @@ namespace EM.IOC
         /// <summary>
         /// 获取指定类型的服务
         /// </summary>
-        /// <typeparam name="T">泛型</typeparam>
+        /// <typeparam name="T">注册的服务类型</typeparam>
         /// <returns>服务</returns>
         T GetService<T>();
         /// <summary>
+        /// 获取指定类型的服务
+        /// </summary>
+        /// <typeparam name="TService">服务类型</typeparam>
+        /// <typeparam name="TImplement">实例类型</typeparam>
+        /// <returns>服务</returns>
+        TImplement GetService<TService, TImplement>() where TImplement:TService;
+        /// <summary>
         /// 获取容器中的服务集
         /// </summary>
-        /// <typeparam name="T">泛型</typeparam>
+        /// <typeparam name="T">注册的服务类型</typeparam>
         /// <returns>服务集</returns>
         IEnumerable<T> GetServices<T>();
         /// <summary>

@@ -169,5 +169,20 @@ namespace EM.IOC
             IIocManager iocManager = GetIocManager(assembly, options);
             return iocManager;
         }
+
+        public TImplement GetService<TService, TImplement>() where TImplement : TService
+        {
+            TImplement ret = default;
+            var services = GetServices<TService>();
+            foreach (var item in services)
+            {
+                if (item is TImplement implement)
+                {
+                    ret = implement;
+                    break;
+                }
+            }
+            return ret;
+        }
     }
 }
