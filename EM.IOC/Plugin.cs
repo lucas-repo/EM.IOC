@@ -12,7 +12,6 @@ namespace EM.IOC
     public abstract class Plugin : AssemblyInformation, IPlugin
     {
         private FileVersionInfo _file;
-        public IIocManager IocManager { get; set; }
         public virtual uint Priority { get; } = 9999;
 
         public bool IsLoaded { get; private set; }
@@ -25,14 +24,11 @@ namespace EM.IOC
             }
         }
 
-        public Plugin(IIocManager iocManager)
-        {
-            IocManager = iocManager ?? throw new ArgumentNullException(nameof(iocManager));
-        }
         /// <summary>
         /// 加载
         /// </summary>
         public virtual bool OnLoad() => true;
+        /// <inheritdoc/>
         public bool Load()
         {
             bool ret = false;
@@ -55,6 +51,7 @@ namespace EM.IOC
         /// 卸载
         /// </summary>
         public virtual bool OnUnload() => true;
+        /// <inheritdoc/>
         public bool Unload()
         {
             bool ret = false;
