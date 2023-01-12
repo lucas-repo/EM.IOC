@@ -31,7 +31,7 @@ namespace EM.IOC
         /// 加载插件
         /// </summary>
         /// <returns>返回成功的扩展</returns>
-        Task<List<IPlugin>> LoadPlugins();
+        List<IPlugin> LoadPlugins();
         /// <summary>
         /// 卸载插件
         /// </summary>

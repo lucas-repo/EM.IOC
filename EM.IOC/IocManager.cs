@@ -31,23 +31,20 @@ namespace EM.IOC
         public abstract IEnumerable<T> GetServices<T>();
 
         /// <inheritdoc/>
-        public virtual async Task<List<IPlugin>> LoadPlugins()
+        public List<IPlugin> LoadPlugins()
         {
             var ret = new List<IPlugin>();
-            await Task.Factory.StartNew(() =>
-            {
-                var plugins = GetServices<IPlugin>();
-                var plugins1 = plugins.Where(x => !x.IsUnloadable).OrderBy(x => x.Priority);//不允许卸载的扩展
-                var unloadablePlugins = plugins.Where(x => x.IsUnloadable).OrderBy(x => x.Priority);//允许卸载的扩展
+            var plugins = GetServices<IPlugin>();
+            var plugins1 = plugins.Where(x => !x.IsUnloadable).OrderBy(x => x.Priority);//不允许卸载的扩展
+            var unloadablePlugins = plugins.Where(x => x.IsUnloadable).OrderBy(x => x.Priority);//允许卸载的扩展
 
-                foreach (var item in plugins1.Union(unloadablePlugins))
+            foreach (var item in plugins1.Union(unloadablePlugins))
+            {
+                if (Load(item))
                 {
-                    if (Load(item))
-                    {
-                        ret.Add(item);
-                    }
+                    ret.Add(item);
                 }
-            });
+            }
             return ret;
         }
         private static bool Load(IPlugin plugin)
