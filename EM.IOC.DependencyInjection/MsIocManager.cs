@@ -19,20 +19,16 @@ namespace EM.IOC.DependencyInjection
         /// <summary>
         /// 实例化管理器（自动创建Host主机）
         /// </summary>
-        /// <param name="iocOptions">ioc参数</param>
-        public MsIocManager(IocOptions iocOptions) : base(iocOptions)
+        public MsIocManager() 
         {
-            var hostBuilder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder();
-            hostBuilder.ConfigureServices((services) => AddServices(services, iocOptions));//注册继承了IInjectable的类型
-            Host = hostBuilder.Build(); 
-            Host.RunAsync();
         }
+
         /// <summary>
         /// 实例化管理器（自动创建Host主机）
         /// </summary>
         /// <param name="hostBuilder">宿主构造器</param>
         /// <param name="iocOptions">容器初始化参数</param>
-        public MsIocManager(IHostBuilder hostBuilder, IocOptions iocOptions) : base(iocOptions)
+        public MsIocManager(IHostBuilder hostBuilder, IocOptions iocOptions)
         {
             if (hostBuilder == null)
             {
@@ -41,6 +37,22 @@ namespace EM.IOC.DependencyInjection
             hostBuilder.ConfigureServices((services) => AddServices(services, iocOptions));//注册继承了IInjectable的类型
             Host = hostBuilder.Build();
             Host.RunAsync();
+        }
+        private bool isInitialized;
+        /// <summary>
+        /// 初始化
+        /// </summary>
+        /// <param name="iocOptions">容器初始化参数</param>
+        public void Initialize(IocOptions iocOptions)
+        {
+            if (!isInitialized)
+            {
+                var hostBuilder = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder();
+                hostBuilder.ConfigureServices((services) => AddServices(services, iocOptions));//注册继承了IInjectable的类型
+                Host = hostBuilder.Build();
+                Host.RunAsync();
+                isInitialized=true;
+            }
         }
         private void AddServices(IServiceCollection services, IocOptions iocOptions)
         {

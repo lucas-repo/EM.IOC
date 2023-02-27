@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EM.Bases;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,17 +13,37 @@ namespace EM.IOC
     /// </summary>
     public abstract class IocManager : IIocManager
     {
+        private static IIocManager iocManager;
         /// <summary>
-        /// ioc参数
+        /// 默认容器管理器
         /// </summary>
-        protected IocOptions IocOptions { get; }
-        /// <summary>
-        /// 实例化管理器（自动创建Host主机）
-        /// </summary>
-        /// <param name="iocOptions">ioc参数</param>
-        public IocManager(IocOptions iocOptions)
+        public static IIocManager Default
         {
-            IocOptions = iocOptions;
+            get
+            {
+                if (iocManager == null)
+                {
+                    string directory = AppDomain.CurrentDomain.BaseDirectory;
+                    var types = directory.GetTypes<IIocManager>(System.IO.SearchOption.AllDirectories);
+                    foreach (var type in types)
+                    {
+                        try
+                        {
+                            iocManager = Activator.CreateInstance(type) as IIocManager;
+                        }
+                        catch (Exception e)
+                        {
+                            Debug.WriteLine($"创建实例 {type.Name} 失败，{e}");
+                        }
+                        if (iocManager != null)
+                        {
+                            break;
+                        }
+                    }
+                }
+                return iocManager;
+            }
+            set { iocManager = value; }
         }
 
         /// <inheritdoc/>

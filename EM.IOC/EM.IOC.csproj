@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="EM.Bases" Version="1.0.5-pre20221112-1" />
+    <ProjectReference Include="..\..\EM.Bases\EM.Bases\EM.Bases.csproj" />
   </ItemGroup>
 
 </Project>
