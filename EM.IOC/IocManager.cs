@@ -187,7 +187,7 @@ namespace EM.IOC
             IIocManager iocManager = GetIocManager(assembly, options);
             return iocManager;
         }
-
+        /// <inheritdoc/>
         public TImplement GetService<TService, TImplement>() where TImplement : TService
         {
             TImplement ret = default;
